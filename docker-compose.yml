@@ -1,28 +1,25 @@
-version: '3.8'
+version: "3.9"
 
 services:
+  deployer:
+    image: alpine/git:latest
+    container_name: deployer
+    volumes:
+      - app-data:/app/repo
+    entrypoint: ["/bin/sh"]
+    command: ["/deploy.sh"]
+    restart: always
+
   web:
-    image: php:8.2-apache
-    container_name: simple-web
+    image: nginx:alpine
+    container_name: web
     ports:
       - "8181:80"
     volumes:
-      - ./:/var/www/html
-      - /home/tj/project/github-autopull:/var/www/html:ro
-    restart: unless-stopped
-    environment:
-      - APACHE_SERVER_NAME=localhost
-    command: |
-      bash -c "
-        echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
-        echo 'Listing files in /var/www/html:' &&
-        ls -la /var/www/html/ &&
-        echo 'Checking if index files are readable:' &&
-        test -r /var/www/html/index.html && echo 'index.html is readable' || echo 'index.html NOT readable' &&
-        test -r /var/www/html/index.php && echo 'index.php is readable' || echo 'index.php NOT readable' &&
-        echo 'Setting proper permissions...' &&
-        chown -R www-data:www-data /var/www/html &&
-        chmod -R 755 /var/www/html &&
-        echo 'Starting Apache...' &&
-        apache2-foreground
-      "
+      - app-data:/usr/share/nginx/html:ro
+    depends_on:
+      - deployer
+    restart: always
+
+volumes:
+  app-data:
