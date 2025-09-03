@@ -1,62 +1,13 @@
 version: '3.8'
 
 services:
-  github-autopull:
+  web:
     image: php:8.2-apache
-    container_name: github-autopull-web
+    container_name: simple-web
     ports:
-      - "8181:80"
+      - "8080:80"
     volumes:
       - ./:/var/www/html
     restart: unless-stopped
-    networks:
-      - web
     environment:
-      - APACHE_DOCUMENT_ROOT=/var/www/html
       - APACHE_SERVER_NAME=localhost
-    command: |
-      bash -c "
-        echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
-        echo 'DirectoryIndex index.html index.php' >> /etc/apache2/apache2.conf &&
-        apache2-foreground
-      "
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.github-autopull.rule=Host(`your-domain.com`)"
-      - "traefik.http.services.github-autopull.loadbalancer.server.port=80"
-
-  # Optional: Add a development container with git for autopull functionality
-  autopull-service:
-    image: alpine/git
-    container_name: github-autopull-service
-    volumes:
-      - ./:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-    working_dir: /app
-    command: |
-      sh -c "
-        while true; do
-          echo 'Checking for updates...'
-          git fetch origin
-          LOCAL=$(git rev-parse HEAD)
-          REMOTE=$(git rev-parse @{u})
-          if [ $LOCAL != $REMOTE ]; then
-            echo 'Updates found, pulling changes...'
-            git pull origin main
-            echo 'Restarting web server...'
-            docker restart github-autopull-web
-          else
-            echo 'No updates found'
-          fi
-          sleep 300
-        done
-      "
-    restart: unless-stopped
-    networks:
-      - web
-    depends_on:
-      - github-autopull
-
-networks:
-  web:
-    external: false
