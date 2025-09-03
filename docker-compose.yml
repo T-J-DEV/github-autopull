@@ -24,15 +24,16 @@ services:
     container_name: github-autopull-service
     volumes:
       - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /app
     command: |
       sh -c "
         while true; do
           echo 'Checking for updates...'
           git fetch origin
-          LOCAL=$$(git rev-parse HEAD)
-          REMOTE=$$(git rev-parse @{u})
-          if [ $$LOCAL != $$REMOTE ]; then
+          LOCAL=$(git rev-parse HEAD)
+          REMOTE=$(git rev-parse @{u})
+          if [ $LOCAL != $REMOTE ]; then
             echo 'Updates found, pulling changes...'
             git pull origin main
             echo 'Restarting web server...'
@@ -48,9 +49,6 @@ services:
       - web
     depends_on:
       - github-autopull
-    volumes:
-      - ./:/app
-      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   web:
