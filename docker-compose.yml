@@ -25,7 +25,7 @@ services:
     image: php:8.2-apache
     container_name: simple-web
     ports:
-      - "8080:80"
+      - "8181:80"
     volumes:
       - ./:/var/www/html
     restart: unless-stopped
