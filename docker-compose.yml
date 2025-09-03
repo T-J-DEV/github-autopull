@@ -1,11 +1,11 @@
-version: "3.8"
+version: "3.9"
 services:
   deployer:
     image: alpine/git:latest
     container_name: deployer
     volumes:
       - app-data:/app/repo
-      - ./deploy.sh:/deploy.sh:ro
+      - /home/tj/project/deploy.sh:/deploy.sh:ro
     entrypoint: ["/bin/sh"]
     command: ["/deploy.sh"]
     restart: always
