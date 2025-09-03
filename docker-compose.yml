@@ -8,6 +8,7 @@ services:
       - "8181:80"
     volumes:
       - ./:/var/www/html
+      - /home/tj/project/github-autopull:/var/www/html:ro
     restart: unless-stopped
     environment:
       - APACHE_SERVER_NAME=localhost
