@@ -5,9 +5,20 @@ services:
     container_name: deployer
     volumes:
       - app-data:/app/repo
-      - ./deploy.sh:/deploy.sh:ro
-    entrypoint: ["/bin/sh"]
-    command: ["/deploy.sh"]
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      if [ ! -f /app/repo/index.html ]; then
+        echo "Cloning repo..."
+        git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo
+      fi &&
+      while true; do
+        echo ">>> Fetching latest code..."
+        cd /app/repo
+        git fetch origin main
+        git reset --hard FETCH_HEAD
+        echo ">>> Pull complete, sleeping 30s..."
+        sleep 30
+      done
     restart: always
 
   nginx:
