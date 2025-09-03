@@ -8,6 +8,7 @@ services:
       - ./deploy.sh:/deploy.sh:ro
     entrypoint: ["/bin/sh"]
     command: ["/deploy.sh"]
+    restart: always
 
   nginx:
     image: nginx:alpine
