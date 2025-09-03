@@ -17,6 +17,7 @@ services:
       - "8181:80"
     volumes:
       - app-data:/usr/share/nginx/html:ro
+      - /home/tj/project/deploy.sh:/deploy.sh:ro
     depends_on:
       - deployer
     restart: always
