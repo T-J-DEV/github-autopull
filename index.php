@@ -1,25 +1,5 @@
 <?php
-/*
-* KEYAUTH.CC PHP EXAMPLE
-*
-* Edit credentials.php file and enter name & ownerid from https://keyauth.cc/app
-*
-* READ HERE TO LEARN ABOUT KEYAUTH FUNCTIONS https://github.com/KeyAuth/KeyAuth-PHP-Example#keyauthapp-instance-definition
-*
-*/
-include 'keyauth.php';
-include 'credentials.php';
-
-if (isset($_SESSION['user_data'])) {
-    header("Location: dashboard/");
-    exit();
-}
-
-$KeyAuthApp = new KeyAuth\api($name, $ownerid);
-
-if (!isset($_SESSION['sessionid'])) {
-    $KeyAuthApp->init();
-}
+// index.php
 ?>
 
 <!DOCTYPE html>
