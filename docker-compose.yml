@@ -18,6 +18,7 @@ services:
       - app-data:/usr/share/nginx/html:ro
     depends_on:
       - deployer
+    restart: always
 
 volumes:
   app-data:
