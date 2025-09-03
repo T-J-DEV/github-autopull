@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Clone repo only if /app/repo/index.html does not exist
+# Only clone if repo is empty
 if [ ! -f /app/repo/index.html ]; then
   echo "Cloning repo..."
   git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo
