@@ -7,7 +7,7 @@ services:
       - app-data:/app/repo
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      [ ! -f /app/repo/index.html ] && echo "Cloning repo..." && git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo;
+      test ! -f /app/repo/index.html && echo "Cloning repo..." && git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo;
       while true; do
         echo ">>> Fetching latest code...";
         cd /app/repo;
