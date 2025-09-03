@@ -1,25 +1,59 @@
-version: "3.8"
-services:
-  deployer:
-    image: alpine/git:latest
-    container_name: deployer
-    volumes:
-      - app-data:/app/repo
-      - ./deploy.sh:/deploy.sh:ro
-    entrypoint: ["/bin/sh"]
-    command: ["/deploy.sh"]
-    restart: always
+version: '3.8'
 
-  nginx:
-    image: nginx:alpine
-    container_name: web
+services:
+  github-autopull:
+    image: php:8.2-apache
+    container_name: github-autopull-web
     ports:
-      - "8530:80"
+      - "8080:80"
     volumes:
-      - app-data:/usr/share/nginx/html:ro
+      - ./:/var/www/html
+    restart: unless-stopped
+    networks:
+      - web
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.github-autopull.rule=Host(`your-domain.com`)"
+      - "traefik.http.services.github-autopull.loadbalancer.server.port=80"
+
+  # Optional: Add a development container with git for autopull functionality
+  autopull-service:
+    image: alpine/git
+    container_name: github-autopull-service
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: |
+      sh -c "
+        while true; do
+          echo 'Checking for updates...'
+          git fetch origin
+          LOCAL=$$(git rev-parse HEAD)
+          REMOTE=$$(git rev-parse @{u})
+          if [ $$LOCAL != $$REMOTE ]; then
+            echo 'Updates found, pulling changes...'
+            git pull origin main
+            echo 'Restarting web server...'
+            docker restart github-autopull-web
+          else
+            echo 'No updates found'
+          fi
+          sleep 300
+        done
+      "
+    restart: unless-stopped
+    networks:
+      - web
     depends_on:
-      - deployer
-    restart: always
+      - github-autopull
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  web:
+    external: false
 
 volumes:
-  app-data:
+  app_data:
