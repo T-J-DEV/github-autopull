@@ -11,3 +11,23 @@ services:
     restart: unless-stopped
     environment:
       - APACHE_SERVER_NAME=localhost
+    command: |
+      bash -c "
+        echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
+        echo 'Listing files in /var/www/html:' &&
+        ls -la /var/www/html/ &&
+        echo 'Starting Apache...' &&
+        apache2-foreground
+      "version: '3.8'
+
+services:
+  web:
+    image: php:8.2-apache
+    container_name: simple-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    restart: unless-stopped
+    environment:
+      - APACHE_SERVER_NAME=localhost
