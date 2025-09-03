@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 services:
   deployer:
     image: alpine/git:latest
@@ -7,17 +7,14 @@ services:
       - app-data:/app/repo
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      if [ ! -f /app/repo/index.html ]; then
-        echo "Cloning repo..."
-        git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo
-      fi &&
+      [ ! -f /app/repo/index.html ] && echo "Cloning repo..." && git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo;
       while true; do
-        echo ">>> Fetching latest code..."
-        cd /app/repo
-        git fetch origin main
-        git reset --hard FETCH_HEAD
-        echo ">>> Pull complete, sleeping 30s..."
-        sleep 30
+        echo ">>> Fetching latest code...";
+        cd /app/repo;
+        git fetch origin main;
+        git reset --hard FETCH_HEAD;
+        echo ">>> Pull complete, sleeping 30s...";
+        sleep 30;
       done
     restart: always
 

@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Clone the repo if the folder is empty
+# Clone repo if empty
 if [ ! -f /app/repo/index.html ]; then
   echo "Cloning repo..."
   git clone -b main https://github.com/T-J-DEV/github-autopull.git /app/repo
 fi
 
-# Keep container alive and pull updates every 30s
+# Auto-pull loop
 while true; do
   echo ">>> Fetching latest code..."
   cd /app/repo
