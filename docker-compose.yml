@@ -5,7 +5,7 @@ services:
     image: php:8.2-apache
     container_name: simple-web
     ports:
-      - "8181:80"
+      - "8080:80"
     volumes:
       - ./:/var/www/html
     restart: unless-stopped
@@ -16,18 +16,12 @@ services:
         echo 'ServerName localhost' >> /etc/apache2/apache2.conf &&
         echo 'Listing files in /var/www/html:' &&
         ls -la /var/www/html/ &&
+        echo 'Checking if index files are readable:' &&
+        test -r /var/www/html/index.html && echo 'index.html is readable' || echo 'index.html NOT readable' &&
+        test -r /var/www/html/index.php && echo 'index.php is readable' || echo 'index.php NOT readable' &&
+        echo 'Setting proper permissions...' &&
+        chown -R www-data:www-data /var/www/html &&
+        chmod -R 755 /var/www/html &&
         echo 'Starting Apache...' &&
         apache2-foreground
-      "version: '3.8'
-
-services:
-  web:
-    image: php:8.2-apache
-    container_name: simple-web
-    ports:
-      - "8282:80"
-    volumes:
-      - ./:/var/www/html
-    restart: unless-stopped
-    environment:
-      - APACHE_SERVER_NAME=localhost
+      "
